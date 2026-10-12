@@ -105,6 +105,23 @@
     applyViewBox();
   }
 
+  function zoomAtPoint(clientX, clientY, factor) {
+    const startBox = { ...viewBoxState };
+    const anchor = screenPointToViewBox(clientX, clientY, startBox);
+    const width = startBox.width * factor;
+    const height = startBox.height * factor;
+    const ratioX = startBox.width ? (anchor.x - startBox.x) / startBox.width : 0.5;
+    const ratioY = startBox.height ? (anchor.y - startBox.y) / startBox.height : 0.5;
+
+    viewBoxState = clampViewBox({
+      x: anchor.x - width * ratioX,
+      y: anchor.y - height * ratioY,
+      width,
+      height
+    });
+    applyViewBox();
+  }
+
   function beginMapPan(event) {
     mapPan = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, startBox: { ...viewBoxState } };
     svg.setPointerCapture(event.pointerId);
@@ -497,6 +514,12 @@
     pendingMove = createMovePreview(trackId, centerMeters);
     render();
   }
+
+  svg.addEventListener('wheel', (event) => {
+    event.preventDefault();
+    const factor = Math.exp(event.deltaY * 0.00135);
+    zoomAtPoint(event.clientX, event.clientY, factor);
+  }, { passive: false });
 
   svg.addEventListener('pointerdown', (event) => {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });

@@ -268,13 +268,15 @@
 
 .yard-pending-panel {
   position: absolute;
-  left: 50%;
-  bottom: 16px;
-  z-index: 30;
-  width: min(760px, calc(100% - 32px));
+  top: 16px;
+  right: 16px;
+  left: auto;
+  bottom: auto;
+  z-index: 60;
+  width: min(620px, calc(100% - 32px));
   margin: 0;
-  transform: translateX(-50%);
-  background: rgba(16, 16, 16, 0.93);
+  transform: none;
+  background: rgba(16, 16, 16, 0.94);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(12px);
 }
@@ -298,6 +300,16 @@
   height: 100%;
   touch-action: none;
   overscroll-behavior: none;
+  cursor: grab;
+}
+
+.yard-map-svg:active {
+  cursor: grabbing;
+}
+
+.yard-wagon,
+.yard-track-hit.is-clickable {
+  cursor: pointer;
 }
 
 
@@ -381,13 +393,15 @@
 
   .yard-map-page .yard-pending-panel {
     position: absolute;
-    left: 50%;
-    bottom: 8px;
-    width: calc(100% - 16px);
+    top: 8px;
+    right: 8px;
+    left: auto;
+    bottom: auto;
+    width: min(430px, calc(100% - 16px));
     gap: 8px;
     margin: 0;
     padding: 9px 10px;
-    transform: translateX(-50%);
+    transform: none;
   }
 
   .yard-map-page .yard-free-length {
