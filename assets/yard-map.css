@@ -300,16 +300,6 @@
   height: 100%;
   touch-action: none;
   overscroll-behavior: none;
-  cursor: grab;
-}
-
-.yard-map-svg:active {
-  cursor: grabbing;
-}
-
-.yard-wagon,
-.yard-track-hit.is-clickable {
-  cursor: pointer;
 }
 
 
@@ -426,4 +416,12 @@
     height: auto;
     border-radius: 12px;
   }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .yard-map-scroll { cursor: grab; }
+  .yard-map-scroll:active { cursor: grabbing; }
+  .yard-wagon,
+  .yard-track-hit.is-clickable,
+  .yard-action-button { cursor: pointer; }
 }

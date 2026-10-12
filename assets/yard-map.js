@@ -515,9 +515,12 @@
     render();
   }
 
-  svg.addEventListener('wheel', (event) => {
+  const wheelTarget = mapViewport || svg;
+  wheelTarget.addEventListener('wheel', (event) => {
+    if (!event.target.closest || !event.target.closest('.yard-map-scroll')) return;
     event.preventDefault();
-    const factor = Math.exp(event.deltaY * 0.00135);
+    event.stopPropagation();
+    const factor = event.deltaY < 0 ? 0.86 : 1.16;
     zoomAtPoint(event.clientX, event.clientY, factor);
   }, { passive: false });
 
