@@ -36,14 +36,6 @@
     <p class="yard-help">Vyber jeden nebo více vozů a klikni na cílovou kolej v místě, kam je chceš postavit. Blikající náhled můžeš dlouze podržet a tažením po stejné koleji přesně doladit. Přesun se uloží až po stisknutí „Posun dokončen“.</p>
     <div class="yard-map-message" id="yardMapMessage" hidden></div>
 
-    <section class="yard-pending-panel" id="yardPendingPanel" hidden>
-      <div class="yard-free-length">Volná délka koleje: <strong id="yardFreeLength">0,0 m</strong></div>
-      <div class="yard-pending-actions">
-        <button class="yard-action-button" id="cancelYardMove" type="button">Zrušit přesun</button>
-        <button class="yard-action-button yard-action-button--confirm" id="confirmYardMove" type="button">Posun dokončen</button>
-      </div>
-    </section>
-
     <section class="yard-map-scroll" aria-label="Mapa železáren">
       <div class="yard-map-stage">
         <svg class="yard-map-svg" id="yardMap" viewBox="0 0 1985 882" role="img" aria-label="Schéma kolejiště železáren s vozy">
@@ -52,6 +44,14 @@
           <g id="yardWagonLayer"></g>
         </svg>
       </div>
+
+      <section class="yard-pending-panel" id="yardPendingPanel" hidden>
+        <div class="yard-free-length">Volná délka koleje: <strong id="yardFreeLength">0,0 m</strong></div>
+        <div class="yard-pending-actions">
+          <button class="yard-action-button" id="cancelYardMove" type="button">Zrušit přesun</button>
+          <button class="yard-action-button yard-action-button--confirm" id="confirmYardMove" type="button">Posun dokončen</button>
+        </div>
+      </section>
     </section>
   </main>
 </body>
