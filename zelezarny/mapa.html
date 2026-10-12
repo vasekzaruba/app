@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070707">
+  <title>Volný provoz železáren</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/yard-map.css">
+  <script src="data/vozy.js" defer></script>
+  <script src="data/mapa-data.js" defer></script>
+  <script src="../assets/wagon-ui.js" defer></script>
+  <script src="../assets/yard-map.js" defer></script>
+</head>
+<body>
+  <main class="page-shell map-page-shell">
+    <nav class="top-nav" aria-label="Navigace">
+      <a class="back-link" href="zelezarny.html">← Zpět</a>
+      <button class="reset-button" id="resetYardState" type="button">Resetovat stav kolejiště</button>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Železárny</p>
+      <h1>Volný provoz</h1>
+      <p class="page-description">Mapa aktuálního postavení vozů. Jedním kliknutím vůz označíš, dvojklikem otevřeš detail a delším podržením označenou skupinu přesuneš.</p>
+    </header>
+
+    <div class="yard-toolbar">
+      <div class="yard-toolbar-group">
+        <span class="yard-selected-count" id="yardSelectedCount">Vybráno: 0</span>
+        <button class="yard-action-button" id="clearYardSelection" type="button" disabled>Zrušit výběr</button>
+      </div>
+    </div>
+
+    <p class="yard-help">Po puštění vozů na cílovou kolej zůstane přesun jen jako náhled. Vozy se definitivně uloží až po stisknutí „Posun dokončen“.</p>
+    <div class="yard-map-message" id="yardMapMessage" hidden></div>
+
+    <section class="yard-pending-panel" id="yardPendingPanel" hidden>
+      <div class="yard-free-length">Volná délka koleje: <strong id="yardFreeLength">0,0 m</strong></div>
+      <div class="yard-pending-actions">
+        <button class="yard-action-button" id="cancelYardMove" type="button">Zrušit přesun</button>
+        <button class="yard-action-button yard-action-button--confirm" id="confirmYardMove" type="button">Posun dokončen</button>
+      </div>
+    </section>
+
+    <section class="yard-map-scroll" aria-label="Mapa železáren">
+      <div class="yard-map-stage">
+        <svg class="yard-map-svg" id="yardMap" viewBox="0 0 1985 882" role="img" aria-label="Schéma kolejiště železáren s vozy">
+          <image href="mapa/planek.png" x="0" y="0" width="1985" height="882"></image>
+          <g id="yardTrackLayer"></g>
+          <g id="yardWagonLayer"></g>
+        </svg>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

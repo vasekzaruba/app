@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070707">
+  <title>Vozy železáren</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="stylesheet" href="../assets/yard-map.css">
+  <script src="data/vozy.js" defer></script>
+  <script src="data/mapa-data.js" defer></script>
+  <script src="../assets/wagon-ui.js" defer></script>
+  <script src="../assets/wagon-catalog.js" defer></script>
+</head>
+<body>
+  <main class="page-shell">
+    <nav class="top-nav" aria-label="Navigace">
+      <a class="back-link" href="zelezarny.html">← Zpět</a>
+    </nav>
+
+    <header class="page-header">
+      <p class="eyebrow">Železárny</p>
+      <h1>Vozy</h1>
+      <p class="page-description">Fyzické vozy používané v provozu. Kliknutím otevřeš detail vozu.</p>
+    </header>
+
+    <section class="wagon-catalog-grid" id="wagonCatalog" aria-label="Katalog vozů"></section>
+  </main>
+</body>
+</html>
