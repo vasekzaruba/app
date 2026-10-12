@@ -150,7 +150,6 @@
 .yard-wagon text {
   fill: #fff;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
   font-weight: 900;
   pointer-events: none;
 }
@@ -228,4 +227,171 @@
 
 .yard-wagon {
   touch-action: none;
+}
+
+.yard-map-page .map-page-shell {
+  width: min(1760px, calc(100% - 28px));
+  padding: 24px 0 32px;
+}
+
+.yard-map-page .top-nav {
+  margin-bottom: 16px;
+}
+
+.yard-map-page .page-header {
+  margin-bottom: 14px;
+}
+
+.yard-map-page .page-header h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.yard-map-page .page-description {
+  margin-top: 8px;
+}
+
+.yard-map-page .yard-toolbar {
+  margin-bottom: 8px;
+}
+
+.yard-map-page .yard-help {
+  margin-bottom: 10px;
+}
+
+.yard-pending-panel {
+  position: sticky;
+  top: 8px;
+  z-index: 30;
+  backdrop-filter: blur(12px);
+}
+
+.yard-map-scroll {
+  height: min(58vh, 620px);
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+.yard-map-stage {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.yard-map-svg {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+
+@media (max-width: 700px) {
+  html:has(body.yard-map-page),
+  body.yard-map-page {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body.yard-map-page {
+    min-height: 100dvh;
+  }
+
+  .yard-map-page .map-page-shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100dvh;
+    padding: 10px 10px 10px;
+    overflow: hidden;
+  }
+
+  .yard-map-page .top-nav {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .top-nav .reset-button {
+    width: auto;
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+
+  .yard-map-page .page-header {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .page-header .eyebrow,
+  .yard-map-page .page-description,
+  .yard-map-page .yard-help {
+    display: none;
+  }
+
+  .yard-map-page .page-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .yard-map-page .yard-toolbar {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .yard-toolbar-group {
+    gap: 7px;
+  }
+
+  .yard-map-page .yard-action-button {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+
+  .yard-map-page .yard-selected-count {
+    min-width: 90px;
+    font-size: 0.86rem;
+  }
+
+  .yard-map-page .yard-map-message {
+    flex: 0 0 auto;
+    margin-bottom: 7px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  .yard-map-page .yard-pending-panel {
+    flex: 0 0 auto;
+    position: static;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 9px 10px;
+  }
+
+  .yard-map-page .yard-free-length {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .yard-map-page .yard-pending-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .yard-map-page .yard-pending-actions .yard-action-button {
+    width: 100%;
+  }
+
+  .yard-map-page .yard-map-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    border-radius: 12px;
+  }
 }

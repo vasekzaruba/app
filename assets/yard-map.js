@@ -12,6 +12,8 @@
   const cancelMoveButton = document.querySelector('#cancelYardMove');
   const resetButton = document.querySelector('#resetYardState');
   const mapMessage = document.querySelector('#yardMapMessage');
+  const mapViewport = document.querySelector('.yard-map-scroll');
+  const fitMapButton = document.querySelector('#fitYardMap');
 
   if (!svg || !trackLayer || !wagonLayer) return;
 
@@ -20,6 +22,110 @@
   const tracks = config.tracks || {};
   const trackMetrics = {};
 
+
+  function applyViewBox() {
+    svg.setAttribute('viewBox', `${viewBoxState.x} ${viewBoxState.y} ${viewBoxState.width} ${viewBoxState.height}`);
+  }
+
+  function fitMap() {
+    viewBoxState = { x: baseViewBox[0], y: baseViewBox[1], width: baseViewBox[2], height: baseViewBox[3] };
+    applyViewBox();
+  }
+
+  function clampViewBox(box) {
+    const minWidth = baseViewBox[2] * 0.16;
+    const minHeight = baseViewBox[3] * 0.16;
+    const width = Math.max(minWidth, Math.min(baseViewBox[2], box.width));
+    const height = Math.max(minHeight, Math.min(baseViewBox[3], box.height));
+    const minX = baseViewBox[0];
+    const minY = baseViewBox[1];
+    const maxX = baseViewBox[0] + baseViewBox[2] - width;
+    const maxY = baseViewBox[1] + baseViewBox[3] - height;
+    return {
+      x: Math.max(minX, Math.min(maxX, box.x)),
+      y: Math.max(minY, Math.min(maxY, box.y)),
+      width,
+      height
+    };
+  }
+
+  function screenPointToViewBox(clientX, clientY, box = viewBoxState) {
+    const rect = svg.getBoundingClientRect();
+    const scale = Math.min(rect.width / box.width, rect.height / box.height);
+    const renderedWidth = box.width * scale;
+    const renderedHeight = box.height * scale;
+    const offsetX = (rect.width - renderedWidth) / 2;
+    const offsetY = (rect.height - renderedHeight) / 2;
+    return {
+      x: box.x + (clientX - rect.left - offsetX) / scale,
+      y: box.y + (clientY - rect.top - offsetY) / scale
+    };
+  }
+
+  function beginPinch() {
+    if (pointers.size < 2) return;
+    if (gesture?.timer) window.clearTimeout(gesture.timer);
+    gesture = null;
+    dragPreview = null;
+    mapPan = null;
+    const values = Array.from(pointers.values()).slice(0, 2);
+    const dx = values[1].x - values[0].x;
+    const dy = values[1].y - values[0].y;
+    const centerX = (values[0].x + values[1].x) / 2;
+    const centerY = (values[0].y + values[1].y) / 2;
+    pinch = {
+      distance: Math.max(1, Math.hypot(dx, dy)),
+      startBox: { ...viewBoxState },
+      anchor: screenPointToViewBox(centerX, centerY, viewBoxState),
+      centerX,
+      centerY
+    };
+    render();
+  }
+
+  function updatePinch() {
+    if (!pinch || pointers.size < 2) return;
+    const values = Array.from(pointers.values()).slice(0, 2);
+    const dx = values[1].x - values[0].x;
+    const dy = values[1].y - values[0].y;
+    const distance = Math.max(1, Math.hypot(dx, dy));
+    const centerX = (values[0].x + values[1].x) / 2;
+    const centerY = (values[0].y + values[1].y) / 2;
+    const factor = pinch.distance / distance;
+    const width = pinch.startBox.width * factor;
+    const height = pinch.startBox.height * factor;
+    const rect = svg.getBoundingClientRect();
+    const scale = Math.min(rect.width / width, rect.height / height);
+    const renderedWidth = width * scale;
+    const renderedHeight = height * scale;
+    const offsetX = (rect.width - renderedWidth) / 2;
+    const offsetY = (rect.height - renderedHeight) / 2;
+    const x = pinch.anchor.x - (centerX - rect.left - offsetX) / scale;
+    const y = pinch.anchor.y - (centerY - rect.top - offsetY) / scale;
+    viewBoxState = clampViewBox({ x, y, width, height });
+    applyViewBox();
+  }
+
+  function beginMapPan(event) {
+    mapPan = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, startBox: { ...viewBoxState } };
+    svg.setPointerCapture(event.pointerId);
+  }
+
+  function updateMapPan(event) {
+    if (!mapPan || mapPan.pointerId !== event.pointerId) return;
+    const rect = svg.getBoundingClientRect();
+    const scale = Math.min(rect.width / mapPan.startBox.width, rect.height / mapPan.startBox.height);
+    const dx = (event.clientX - mapPan.startX) / scale;
+    const dy = (event.clientY - mapPan.startY) / scale;
+    viewBoxState = clampViewBox({
+      x: mapPan.startBox.x - dx,
+      y: mapPan.startBox.y - dy,
+      width: mapPan.startBox.width,
+      height: mapPan.startBox.height
+    });
+    applyViewBox();
+    event.preventDefault();
+  }
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
   }
@@ -39,6 +145,11 @@
   let gesture = null;
   let tapTimer = null;
   let lastTap = { id: null, time: 0 };
+  const baseViewBox = Array.isArray(config.viewBox) && config.viewBox.length === 4 ? config.viewBox.map(Number) : [0, 0, 1985, 882];
+  let viewBoxState = { x: baseViewBox[0], y: baseViewBox[1], width: baseViewBox[2], height: baseViewBox[3] };
+  const pointers = new Map();
+  let mapPan = null;
+  let pinch = null;
 
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -280,12 +391,14 @@
       if (isSelected) classNames.push('is-selected');
       if (isPending) classNames.push('is-pending');
       const label = wagon.shortName || wagon.type;
-      const textVisible = width >= 40;
+      const availableWidth = Math.max(12, width - 7);
+      const estimatedUnits = Math.max(1, label.length * 0.58);
+      const fontSize = Math.max(3.1, Math.min(10, availableWidth / estimatedUnits));
 
       return `
         <g class="${classNames.join(' ')}" data-wagon-id="${id}" transform="translate(${point.x.toFixed(2)} ${point.y.toFixed(2)}) rotate(${point.angle.toFixed(2)})">
           <rect x="${(-width / 2).toFixed(2)}" y="-11" width="${width.toFixed(2)}" height="22" rx="4"></rect>
-          ${textVisible ? `<text x="0" y="4" text-anchor="middle">${label}</text>` : ''}
+          <text x="0" y="${(fontSize * 0.34).toFixed(2)}" text-anchor="middle" font-size="${fontSize.toFixed(2)}">${label}</text>
         </g>
       `;
     }).join('');
@@ -392,8 +505,20 @@
   }
 
   svg.addEventListener('pointerdown', (event) => {
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pointers.size === 2) {
+      beginPinch();
+      event.preventDefault();
+      return;
+    }
+
     const wagonElement = event.target.closest?.('[data-wagon-id]');
-    if (!wagonElement || pendingMove) return;
+    if (!wagonElement || pendingMove) {
+      beginMapPan(event);
+      event.preventDefault();
+      return;
+    }
 
     const id = wagonElement.dataset.wagonId;
     gesture = {
@@ -407,9 +532,23 @@
     };
 
     gesture.timer = window.setTimeout(() => startDrag(id, event), 430);
+    event.preventDefault();
   });
 
   svg.addEventListener('pointermove', (event) => {
+    if (pointers.has(event.pointerId)) pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pinch && pointers.size >= 2) {
+      updatePinch();
+      event.preventDefault();
+      return;
+    }
+
+    if (mapPan && mapPan.pointerId === event.pointerId) {
+      updateMapPan(event);
+      return;
+    }
+
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     const moved = Math.hypot(event.clientX - gesture.startX, event.clientY - gesture.startY);
     if (!gesture.dragging && moved > 8) {
@@ -420,6 +559,21 @@
   });
 
   function endPointer(event) {
+    pointers.delete(event.pointerId);
+
+    if (pinch) {
+      if (pointers.size < 2) pinch = null;
+      event.preventDefault();
+      return;
+    }
+
+    if (mapPan && mapPan.pointerId === event.pointerId) {
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+      mapPan = null;
+      event.preventDefault();
+      return;
+    }
+
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     window.clearTimeout(gesture.timer);
     const dragged = finishDrag(event);
@@ -427,10 +581,17 @@
     const moved = gesture.moved;
     gesture = null;
     if (!dragged && !moved) handleTap(id);
+    event.preventDefault();
   }
 
   svg.addEventListener('pointerup', endPointer);
   svg.addEventListener('pointercancel', (event) => {
+    pointers.delete(event.pointerId);
+    if (pinch && pointers.size < 2) pinch = null;
+    if (mapPan && mapPan.pointerId === event.pointerId) {
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+      mapPan = null;
+    }
     if (!gesture || gesture.pointerId !== event.pointerId) return;
     window.clearTimeout(gesture.timer);
     if (gesture.dragging && svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
@@ -462,6 +623,8 @@
     render();
   });
 
+  fitMapButton?.addEventListener('click', fitMap);
+
   resetButton?.addEventListener('click', () => {
     if (!window.confirm('Opravdu resetovat stav kolejiště?')) return;
     state = clone(config.initialState || {});
@@ -472,5 +635,6 @@
     render();
   });
 
+  fitMap();
   render();
 })();
