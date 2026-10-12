@@ -66,7 +66,6 @@
     if (pointers.size < 2) return;
     if (gesture?.timer) window.clearTimeout(gesture.timer);
     gesture = null;
-    dragPreview = null;
     mapPan = null;
     const values = Array.from(pointers.values()).slice(0, 2);
     const dx = values[1].x - values[0].x;
@@ -141,7 +140,6 @@
   let state = loadState();
   let selected = new Set();
   let pendingMove = null;
-  let dragPreview = null;
   let gesture = null;
   let tapTimer = null;
   let lastTap = { id: null, time: 0 };
@@ -150,6 +148,7 @@
   const pointers = new Map();
   let mapPan = null;
   let pinch = null;
+  let pendingDrag = null;
 
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -316,8 +315,7 @@
     ), valid[0]);
   }
 
-  function createMovePreview(trackId, centerMeters) {
-    const ids = sortedSelection();
+  function createMovePreviewForIds(trackId, centerMeters, ids) {
     const total = groupLength(ids);
     const excluded = new Set(ids);
     let start = centerMeters - total / 2;
@@ -330,7 +328,20 @@
       cursor += wagonLength(id) + GAP;
     });
 
-    return { trackId, positions, ids };
+    return { trackId, positions, ids: [...ids] };
+  }
+
+  function createMovePreview(trackId, centerMeters) {
+    return createMovePreviewForIds(trackId, centerMeters, sortedSelection());
+  }
+
+  function pendingMoveCenterMeters() {
+    if (!pendingMove?.ids?.length) return 0;
+    const firstId = pendingMove.ids[0];
+    const lastId = pendingMove.ids[pendingMove.ids.length - 1];
+    const start = pendingMove.positions[firstId];
+    const end = pendingMove.positions[lastId] + wagonLength(lastId);
+    return (start + end) / 2;
   }
 
   function freeLengthAfterMove(preview) {
@@ -358,17 +369,18 @@
   }
 
   function renderTracks() {
-    const activeTrack = dragPreview?.trackId || pendingMove?.trackId || null;
+    const activeTrack = pendingMove?.trackId || null;
     trackLayer.innerHTML = Object.entries(tracks).map(([id, track]) => {
       const points = track.points.map(([x, y]) => `${x},${y}`).join(' ');
       const active = id === activeTrack ? ' is-target' : '';
-      return `<polyline class="yard-track-hit${active}" data-track-id="${id}" points="${points}"></polyline>`;
+      const clickable = selected.size ? ' is-clickable' : '';
+      return `<polyline class="yard-track-hit${active}${clickable}" data-track-id="${id}" points="${points}"></polyline>`;
     }).join('');
   }
 
   function effectiveStateForWagon(id) {
     const base = state[id];
-    const preview = dragPreview || pendingMove;
+    const preview = pendingMove;
     if (preview && preview.positions[id] !== undefined) {
       return { ...base, track: preview.trackId, position: preview.positions[id] };
     }
@@ -376,7 +388,7 @@
   }
 
   function renderWagons() {
-    const preview = dragPreview || pendingMove;
+    const preview = pendingMove;
     wagonLayer.innerHTML = Object.keys(catalog).map((id) => {
       const wagon = catalog[id];
       const wagonState = effectiveStateForWagon(id);
@@ -467,11 +479,10 @@
     }, 260);
   }
 
-  function startDrag(id, event) {
-    if (pendingMove) return;
-    if (!selected.has(id)) {
-      selected.clear();
-      selected.add(id);
+  function setPendingMoveFromTrack(trackId, event) {
+    if (!selected.size) {
+      showMessage('Nejdřív vyber jeden nebo více vozů.');
+      return;
     }
 
     if (!selectionOnSingleTrack()) {
@@ -479,59 +490,78 @@
       return;
     }
 
-    gesture.dragging = true;
-    svg.setPointerCapture(event.pointerId);
-    updateDrag(event);
-  }
-
-  function updateDrag(event) {
-    if (!gesture?.dragging) return;
     const point = pointerToSvg(event);
-    const nearest = nearestTrack(point);
+    const nearest = nearestPointOnTrack(trackId, point);
     if (!nearest) return;
-    const centerMeters = metersForMapDistance(nearest.trackId, nearest.along);
-    dragPreview = createMovePreview(nearest.trackId, centerMeters);
+    const centerMeters = metersForMapDistance(trackId, nearest.along);
+    pendingMove = createMovePreview(trackId, centerMeters);
     render();
-    event.preventDefault();
-  }
-
-  function finishDrag(event) {
-    if (!gesture?.dragging) return false;
-    if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
-    if (dragPreview) pendingMove = clone(dragPreview);
-    dragPreview = null;
-    render();
-    return true;
   }
 
   svg.addEventListener('pointerdown', (event) => {
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
     if (pointers.size === 2) {
+      if (gesture?.timer) window.clearTimeout(gesture.timer);
+      pendingDrag = null;
       beginPinch();
       event.preventDefault();
       return;
     }
 
     const wagonElement = event.target.closest?.('[data-wagon-id]');
-    if (!wagonElement || pendingMove) {
-      beginMapPan(event);
+    if (wagonElement) {
+      const id = wagonElement.dataset.wagonId;
+      const isPendingWagon = Boolean(pendingMove && pendingMove.positions[id] !== undefined);
+      gesture = {
+        type: isPendingWagon ? 'pending-wagon' : 'wagon',
+        id,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+        timer: null
+      };
+
+      if (isPendingWagon) {
+        gesture.timer = window.setTimeout(() => {
+          if (!gesture || gesture.pointerId !== event.pointerId || gesture.moved || !pendingMove) return;
+          const point = pointerToSvg(event);
+          const nearest = nearestPointOnTrack(pendingMove.trackId, point);
+          if (!nearest) return;
+          const pointerMeters = metersForMapDistance(pendingMove.trackId, nearest.along);
+          pendingDrag = {
+            pointerId: event.pointerId,
+            trackId: pendingMove.trackId,
+            ids: [...pendingMove.ids],
+            grabOffset: pointerMeters - pendingMoveCenterMeters()
+          };
+          gesture.type = 'pending-drag';
+          render();
+        }, 420);
+      }
+
+      svg.setPointerCapture(event.pointerId);
       event.preventDefault();
       return;
     }
 
-    const id = wagonElement.dataset.wagonId;
-    gesture = {
-      id,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      dragging: false,
-      moved: false,
-      timer: null
-    };
+    const trackElement = event.target.closest?.('[data-track-id]');
+    if (trackElement && selected.size) {
+      gesture = {
+        type: 'track',
+        trackId: trackElement.dataset.trackId,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false
+      };
+      svg.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      return;
+    }
 
-    gesture.timer = window.setTimeout(() => startDrag(id, event), 430);
+    beginMapPan(event);
     event.preventDefault();
   });
 
@@ -550,12 +580,29 @@
     }
 
     if (!gesture || gesture.pointerId !== event.pointerId) return;
-    const moved = Math.hypot(event.clientX - gesture.startX, event.clientY - gesture.startY);
-    if (!gesture.dragging && moved > 8) {
-      gesture.moved = true;
-      window.clearTimeout(gesture.timer);
+
+    if (pendingDrag && pendingDrag.pointerId === event.pointerId && gesture.type === 'pending-drag') {
+      const point = pointerToSvg(event);
+      const nearest = nearestPointOnTrack(pendingDrag.trackId, point);
+      if (nearest) {
+        const pointerMeters = metersForMapDistance(pendingDrag.trackId, nearest.along);
+        const centerMeters = pointerMeters - pendingDrag.grabOffset;
+        pendingMove = createMovePreviewForIds(pendingDrag.trackId, centerMeters, pendingDrag.ids);
+        render();
+      }
+      event.preventDefault();
+      return;
     }
-    if (gesture.dragging) updateDrag(event);
+
+    const moved = Math.hypot(event.clientX - gesture.startX, event.clientY - gesture.startY);
+    if (moved > 8) {
+      gesture.moved = true;
+      if (gesture.timer) {
+        window.clearTimeout(gesture.timer);
+        gesture.timer = null;
+      }
+    }
+    event.preventDefault();
   });
 
   function endPointer(event) {
@@ -575,12 +622,22 @@
     }
 
     if (!gesture || gesture.pointerId !== event.pointerId) return;
-    window.clearTimeout(gesture.timer);
-    const dragged = finishDrag(event);
-    const id = gesture.id;
-    const moved = gesture.moved;
+    if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+    const currentGesture = gesture;
+    if (currentGesture.timer) window.clearTimeout(currentGesture.timer);
     gesture = null;
-    if (!dragged && !moved) handleTap(id);
+
+    if (pendingDrag && pendingDrag.pointerId === event.pointerId) {
+      pendingDrag = null;
+      render();
+      event.preventDefault();
+      return;
+    }
+
+    if (!currentGesture.moved) {
+      if (currentGesture.type === 'wagon' || currentGesture.type === 'pending-wagon') handleTap(currentGesture.id);
+      if (currentGesture.type === 'track') setPendingMoveFromTrack(currentGesture.trackId, event);
+    }
     event.preventDefault();
   }
 
@@ -592,12 +649,12 @@
       if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
       mapPan = null;
     }
-    if (!gesture || gesture.pointerId !== event.pointerId) return;
-    window.clearTimeout(gesture.timer);
-    if (gesture.dragging && svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
-    gesture = null;
-    dragPreview = null;
-    render();
+    if (gesture?.pointerId === event.pointerId) {
+      if (gesture.timer) window.clearTimeout(gesture.timer);
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+      gesture = null;
+    }
+    if (pendingDrag?.pointerId === event.pointerId) pendingDrag = null;
   });
 
   clearSelectionButton?.addEventListener('click', () => {
@@ -606,6 +663,7 @@
   });
 
   cancelMoveButton?.addEventListener('click', () => {
+    pendingDrag = null;
     pendingMove = null;
     render();
   });
@@ -618,6 +676,7 @@
       state[id].position = pendingMove.positions[id];
     });
     saveState();
+    pendingDrag = null;
     pendingMove = null;
     selected.clear();
     render();
@@ -629,8 +688,8 @@
     if (!window.confirm('Opravdu resetovat stav kolejiště?')) return;
     state = clone(config.initialState || {});
     selected.clear();
+    pendingDrag = null;
     pendingMove = null;
-    dragPreview = null;
     saveState();
     render();
   });

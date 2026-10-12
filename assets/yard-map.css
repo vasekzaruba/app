@@ -128,7 +128,15 @@
   stroke-width: 24;
   stroke-linecap: round;
   stroke-linejoin: round;
-  pointer-events: none;
+  pointer-events: stroke;
+}
+
+.yard-track-hit.is-clickable {
+  cursor: pointer;
+}
+
+.yard-track-hit.is-clickable:hover {
+  stroke: rgba(139, 180, 255, 0.18);
 }
 
 .yard-track-hit.is-target {
