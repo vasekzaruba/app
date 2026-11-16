@@ -1502,42 +1502,46 @@ body {
   }
 }
 
-
 /* Technical completion control */
 .complete-button {
   width: 50px;
   height: 50px;
   border-width: 1.5px;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 
-.checkpoint-card.is-active .complete-button {
-  border-width: 1.5px;
-}
-
+.checkpoint-card.is-active .complete-button,
 .checkpoint-card.is-complete .complete-button {
   border-width: 1.5px;
 }
 
 .checkmark {
-  position: relative;
-  display: block;
-  width: 18px;
-  height: 25px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-size: 0;
+  line-height: 0;
 }
 
+.checkmark::before,
 .checkmark::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 0;
-  width: 8px;
-  height: 17px;
-  border-right: 3px solid currentColor;
-  border-bottom: 3px solid currentColor;
-  border-radius: 0;
-  transform: rotate(45deg);
-  transform-origin: center;
+  content: none;
+}
+
+.checkmark svg {
+  display: block;
+  width: 21px;
+  height: 21px;
+  overflow: visible;
+}
+
+.checkmark path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
 }
 
 .complete-button:hover,
