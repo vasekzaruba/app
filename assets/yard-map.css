@@ -1,0 +1,393 @@
+.map-page-shell {
+  width: min(1760px, calc(100% - 28px));
+}
+
+.yard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.yard-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.yard-selected-count {
+  min-width: 108px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.yard-help {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.yard-map-message {
+  margin-bottom: 14px;
+  padding: 11px 14px;
+  border: 1px solid #7a5a22;
+  border-radius: 10px;
+  background: rgba(255, 189, 76, 0.08);
+  color: #ffd78f;
+  font-weight: 800;
+}
+
+.yard-pending-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding: 15px 16px;
+  border: 1px solid #d3a13e;
+  border-radius: 12px;
+  background: rgba(211, 161, 62, 0.08);
+}
+
+.yard-pending-panel[hidden] {
+  display: none;
+}
+
+.yard-free-length {
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+.yard-free-length strong {
+  color: #a9e6b9;
+}
+
+.yard-free-length strong.is-negative {
+  color: #ff9b9b;
+}
+
+.yard-pending-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.yard-action-button {
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.yard-action-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.yard-action-button--confirm {
+  border-color: var(--success);
+  background: rgba(60, 190, 98, 0.12);
+}
+
+.yard-map-scroll {
+  width: 100%;
+  overflow: auto;
+  border: 1px solid #444;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.yard-map-stage {
+  width: 100%;
+  min-width: 1100px;
+}
+
+.yard-map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+.yard-map-svg image {
+  pointer-events: none;
+}
+
+.yard-track-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 24;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: stroke;
+}
+
+.yard-track-hit.is-clickable {
+  cursor: pointer;
+}
+
+.yard-track-hit.is-clickable:hover {
+  stroke: rgba(139, 180, 255, 0.18);
+}
+
+.yard-track-hit.is-target {
+  stroke: rgba(255, 207, 76, 0.34);
+}
+
+.yard-wagon {
+  cursor: pointer;
+  color: #101010;
+}
+
+.yard-wagon rect {
+  fill: #1c1c1c;
+  stroke: #fff;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.yard-wagon text {
+  fill: #fff;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.yard-wagon.is-selected rect {
+  fill: #27396f;
+  stroke: #8bb4ff;
+  stroke-width: 3;
+}
+
+.yard-wagon.is-pending {
+  animation: yard-wagon-pulse 1.15s ease-in-out infinite;
+}
+
+.yard-wagon.is-pending rect {
+  fill: #6a4f13;
+  stroke: #ffd46f;
+}
+
+@keyframes yard-wagon-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+
+
+@media (max-width: 700px) {
+  .map-page-shell {
+    width: min(100% - 18px, 1760px);
+  }
+
+  .yard-map-stage {
+    min-width: 980px;
+  }
+
+  .yard-pending-actions,
+  .yard-pending-actions .yard-action-button {
+    width: 100%;
+  }
+}
+
+.yard-wagon {
+  touch-action: none;
+}
+
+.yard-map-page .map-page-shell {
+  width: min(1760px, calc(100% - 28px));
+  padding: 24px 0 32px;
+}
+
+.yard-map-page .top-nav {
+  margin-bottom: 16px;
+}
+
+.yard-map-page .page-header {
+  margin-bottom: 14px;
+}
+
+.yard-map-page .page-header h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.yard-map-page .page-description {
+  margin-top: 8px;
+}
+
+.yard-map-page .yard-toolbar {
+  margin-bottom: 8px;
+}
+
+.yard-map-page .yard-help {
+  margin-bottom: 10px;
+}
+
+.yard-pending-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  left: auto;
+  bottom: auto;
+  z-index: 60;
+  width: min(620px, calc(100% - 32px));
+  margin: 0;
+  transform: none;
+  background: rgba(16, 16, 16, 0.94);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(12px);
+}
+
+.yard-map-scroll {
+  position: relative;
+  height: clamp(540px, 70vh, 780px);
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+.yard-map-stage {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.yard-map-svg {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+
+@media (max-width: 700px) {
+  html:has(body.yard-map-page),
+  body.yard-map-page {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body.yard-map-page {
+    min-height: 100dvh;
+  }
+
+  .yard-map-page .map-page-shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100dvh;
+    padding: 10px 10px 10px;
+    overflow: hidden;
+  }
+
+  .yard-map-page .top-nav {
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .top-nav .reset-button {
+    width: auto;
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 0.78rem;
+  }
+
+  .yard-map-page .page-header {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .page-header .eyebrow,
+  .yard-map-page .page-description,
+  .yard-map-page .yard-help {
+    display: none;
+  }
+
+  .yard-map-page .page-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .yard-map-page .yard-toolbar {
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+  }
+
+  .yard-map-page .yard-toolbar-group {
+    gap: 7px;
+  }
+
+  .yard-map-page .yard-action-button {
+    min-height: 38px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+
+  .yard-map-page .yard-selected-count {
+    min-width: 90px;
+    font-size: 0.86rem;
+  }
+
+  .yard-map-page .yard-map-message {
+    flex: 0 0 auto;
+    margin-bottom: 7px;
+    padding: 8px 10px;
+    font-size: 0.82rem;
+  }
+
+  .yard-map-page .yard-pending-panel {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    left: auto;
+    bottom: auto;
+    width: min(430px, calc(100% - 16px));
+    gap: 8px;
+    margin: 0;
+    padding: 9px 10px;
+    transform: none;
+  }
+
+  .yard-map-page .yard-free-length {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .yard-map-page .yard-pending-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 7px;
+  }
+
+  .yard-map-page .yard-pending-actions .yard-action-button {
+    width: 100%;
+  }
+
+  .yard-map-page .yard-map-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    border-radius: 12px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .yard-map-scroll { cursor: grab; }
+  .yard-map-scroll:active { cursor: grabbing; }
+  .yard-wagon,
+  .yard-track-hit.is-clickable,
+  .yard-action-button { cursor: pointer; }
+}
