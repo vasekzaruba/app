@@ -391,3 +391,60 @@
   .yard-track-hit.is-clickable,
   .yard-action-button { cursor: pointer; }
 }
+
+.yard-map-message {
+  border-color: var(--warning-border);
+  background: var(--warning-soft);
+  color: var(--warning-text);
+}
+
+.yard-pending-panel {
+  border-color: var(--warning-border);
+  background: var(--overlay-surface);
+  color: var(--text);
+  box-shadow: var(--shadow-raised);
+}
+
+.yard-free-length strong {
+  color: var(--success);
+}
+
+.yard-free-length strong.is-negative {
+  color: var(--danger);
+}
+
+.yard-action-button {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.yard-action-button--confirm {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.yard-map-scroll {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 700px) {
+  body.yard-map-page {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+  }
+
+  .yard-map-page .app-bar {
+    flex: 0 0 auto;
+  }
+
+  .yard-map-page .map-page-shell {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+}

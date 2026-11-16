@@ -3,25 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#070707">
+  <meta name="theme-color" content="#f3f5f7">
   <title>Železárny</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/theme.js?v=20261116-1"></script>
+  <link rel="stylesheet" href="../assets/styles.css?v=20261116-1">
 </head>
 <body>
+  <header class="app-bar">
+    <div class="app-bar-inner">
+      <a class="app-brand" href="../index.html">Provozní aplikace</a>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Přepnout motiv">
+        <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☾</span>
+        <span data-theme-label>Tmavý</span>
+      </button>
+    </div>
+  </header>
   <main class="page-shell">
     <nav class="top-nav" aria-label="Navigace">
-      <a class="back-link" href="../index.html">← Zpět</a>
+      <a class="back-link" href="../index.html">← Výběr areálu</a>
     </nav>
 
     <header class="page-header">
-      <p class="eyebrow">Provozní aplikace</p>
+      <p class="eyebrow">Areál</p>
       <h1>Železárny</h1>
       <p class="page-description">Vyber část železáren, se kterou chceš pracovat.</p>
     </header>
 
     <section class="menu-list" aria-label="Výběr části železáren">
       <a class="menu-card" href="aktivity-zelezarny.html">
-        <span>Aktivity železáren</span>
+        <span>Aktivity</span>
         <span class="menu-arrow" aria-hidden="true">→</span>
       </a>
       <a class="menu-card" href="mapa.html">
