@@ -242,7 +242,7 @@ function createCheckpointMarkup(checkpoint, index) {
       </div>
 
       <button class="complete-button" type="button" aria-label="Označit checkpoint jako splněný" aria-pressed="false">
-        <span class="checkmark" aria-hidden="true">✓</span>
+        <span class="checkmark" aria-hidden="true"></span>
       </button>
     </article>
   `;
