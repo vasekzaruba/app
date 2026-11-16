@@ -990,7 +990,7 @@ body {
 
 .eyebrow {
   margin-bottom: 8px;
-  color: var(--accent);
+  color: var(--muted);
   font-size: 0.74rem;
   letter-spacing: 0.12em;
 }
@@ -1040,8 +1040,8 @@ h1 {
   display: grid;
   place-items: center;
   border-radius: 9px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--surface-muted);
+  color: var(--text);
   font-size: 1.2rem;
 }
 
@@ -1104,17 +1104,15 @@ h1 {
 }
 
 .initial-wagon-list li::marker {
-  color: var(--accent);
+  color: var(--muted);
 }
 
 .checkpoint-list {
   gap: 12px;
-  counter-reset: checkpoint-step;
 }
 
 .checkpoint-card {
   position: relative;
-  counter-increment: checkpoint-step;
   min-height: 164px;
   padding: 22px 22px 22px 26px;
   border: 1px solid var(--line);
@@ -1125,17 +1123,6 @@ h1 {
   transform: none;
 }
 
-.checkpoint-card::before {
-  content: "Krok " counter(checkpoint-step);
-  position: absolute;
-  top: 12px;
-  right: 84px;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 850;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
 
 .checkpoint-card.is-active {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
@@ -1171,10 +1158,10 @@ h1 {
 .track-number {
   min-width: 50px;
   min-height: 40px;
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
+  border: 1px solid var(--line-strong);
   border-radius: 8px;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--surface-muted);
+  color: var(--text);
 }
 
 .checkpoint-text p {
@@ -1202,7 +1189,8 @@ h1 {
 
 .checkpoint-wagon-item--interactive,
 .initial-wagon-item--interactive {
-  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--text);
+  text-decoration-color: color-mix(in srgb, var(--muted) 48%, transparent);
 }
 
 .checkpoint-wagon-item--interactive:hover,
@@ -1324,7 +1312,7 @@ h1 {
 .wagon-catalog-card:hover,
 .wagon-catalog-card:focus-visible {
   transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-color: var(--line-strong);
   background: var(--surface-hover);
   box-shadow: var(--shadow-raised);
 }
