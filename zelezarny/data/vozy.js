@@ -3,61 +3,47 @@
   window.wagonImageBase = scriptUrl ? new URL('../vozy/', scriptUrl).href : '';
 
   window.wagonCatalog = {
-    'eas-01': {
-      shortName: 'Eas 1',
+    'Eas_01': {
+      shortName: 'Eas',
       type: 'Eas',
       number: '',
       length: 14.04,
       image: null
     },
-    'eas-02': {
-      shortName: 'Eas 2',
-      type: 'Eas',
-      number: '',
-      length: 14.04,
-      image: null
-    },
-    'tams-01': {
-      shortName: 'Tams 1',
-      type: 'Tams',
-      number: '',
-      length: 14.62,
-      image: null
-    },
-    'zags-01': {
-      shortName: 'Zags 1',
-      type: 'Zags',
-      number: '',
-      length: 14.40,
-      image: null
-    },
-    'shimmns-01': {
-      shortName: 'Shimmns 1',
-      type: 'Shimmns',
-      number: '',
-      length: 12.04,
-      image: null
-    },
-    'res-01': {
-      shortName: 'Res 1',
+    'Res_01': {
+      shortName: 'Res',
       type: 'Res',
       number: '',
       length: 19.90,
-      image: null
+      image: Res-01.jpg,
     },
-    'samms-01': {
-      shortName: 'Samms 1',
+    'Rilns_01': {
+      shortName: 'Rilns',
+      type: 'Rilns',
+      number: '',
+      length: 20.15,
+      image: Rilns-01.jpg,
+    },
+    'Rs_01': {
+      shortName: 'Rs',
+      type: 'Res',
+      number: '',
+      length: 19.90,
+      image: Rs-01.jpg,
+    },
+    'Samms_01': {
+      shortName: 'Samms',
       type: 'Samms',
       number: '',
       length: 16.40,
-      image: null
+      image: Samms-01.jpg,
     },
-    'interni-srot-01': {
-      shortName: 'Šrotový vůz 1',
-      type: 'Vnitropodnikový šrotový vůz',
+    'vnitro_01': {
+      shortName: 'Šrotový vůz',
+      type: 'Vnitropodnikový vůz',
       number: '',
       length: 8.80,
-      image: null
+      image: vnitro-01.jpg,
     }
   };
 })();
