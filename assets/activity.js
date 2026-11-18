@@ -170,8 +170,8 @@ function getCheckpointDocuments(checkpoint) {
 }
 
 function getDocumentTitle(documents, documentIndex) {
-  if (documents.length === 1) return 'Nákladní list';
-  return `Nákladní list ${documentIndex + 1}`;
+  if (documents.length === 1) return 'Nálepka';
+  return `Nálepka ${documentIndex + 1}`;
 }
 
 function createDocumentMarkup(checkpoint, checkpointIndex) {
