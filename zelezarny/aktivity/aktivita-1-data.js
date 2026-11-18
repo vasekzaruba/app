@@ -17,7 +17,7 @@ window.activityConfig = {
       track: '3',
       wagons: [
         { id: 'Eas_01', label: 'Eas – železný šrot' },
-        { id: 'Samms_01', label: 'Shimmns – prázdný' },
+        { id: 'Samms_01', label: 'Samms – prázdný' },
         { id: 'Rilns_01', label: 'Rilns - ložený' },
       ],
     },
