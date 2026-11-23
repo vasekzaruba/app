@@ -158,15 +158,10 @@ function documentIconSvg() {
 }
 
 function getCheckpointDocuments(checkpoint) {
-  if (Array.isArray(checkpoint.documents)) {
-    return checkpoint.documents.map((document) => (
-      typeof document === 'string' ? { file: document } : document
-    ));
-  }
-  if (checkpoint.document) {
-    return [typeof checkpoint.document === 'string' ? { file: checkpoint.document } : checkpoint.document];
-  }
-  return [];
+  if (!Array.isArray(checkpoint.documents)) return [];
+  return checkpoint.documents.map((document) => (
+    typeof document === 'string' ? { file: document } : document
+  ));
 }
 
 function getDocumentTitle(documents, documentIndex) {
@@ -200,13 +195,8 @@ function createDocumentMarkup(checkpoint, checkpointIndex) {
 }
 
 function createCheckpointMarkup(checkpoint, index) {
-  const wagons = Array.isArray(checkpoint.wagons)
-    ? checkpoint.wagons
-    : checkpoint.wagon
-      ? [checkpoint.wagon]
-      : [];
-
-  const wagonCount = checkpoint.count ?? wagons.length;
+  const wagons = Array.isArray(checkpoint.wagons) ? checkpoint.wagons : [];
+  const wagonCount = wagons.length;
 
   return `
     <article class="checkpoint-card" data-checkpoint="${index}">

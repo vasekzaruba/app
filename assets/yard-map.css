@@ -1,3 +1,18 @@
+
+:root {
+  --warning-border: #d6a33d;
+  --warning-soft: #fff7df;
+  --warning-text: #785712;
+  --overlay-surface: rgba(255, 255, 255, 0.95);
+}
+
+html[data-theme="dark"] {
+  --warning-border: #a97d28;
+  --warning-soft: #342b17;
+  --warning-text: #f2cf7b;
+  --overlay-surface: rgba(24, 33, 47, 0.95);
+}
+
 .map-page-shell {
   width: min(1760px, calc(100% - 28px));
 }
