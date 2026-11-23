@@ -2,7 +2,7 @@ window.activityConfig = {
   storageKey: 'ironworks-activity-1-checkpoints',
 
   title: 'Aktivita 1',
-  description: 'Zpracuj příchozí vozy, obsluž jednotlivé provozy železáren a připrav odchozí soupravu.',
+  description: 'Testovací aktivita.',
   documentBase: '../dokumenty/aktivita-1/',
 
   initialState: [
